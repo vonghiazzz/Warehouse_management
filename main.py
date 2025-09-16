@@ -1,5 +1,5 @@
 from tkinter import Tk
-# from views.login_window import LoginWindow
+from views.login_window import LoginWindow
 from PIL import Image, ImageTk
 # from models.database import Base, engine
 # from models import major, student
@@ -28,7 +28,7 @@ def main():
     root.geometry(f"{window_width}x{window_height}+{x}+{y}")
 
     #Run login page
-    # LoginWindow(root)
+    LoginWindow(root)
 
     # Load icon by Pillow to resize
     icon_img = Image.open("assets/banner.png").resize((40,40), Image.Resampling.LANCZOS)
