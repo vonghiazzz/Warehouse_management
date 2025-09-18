@@ -142,10 +142,8 @@ class LoginWindow:
 
         if LoginController.authenticate(username, password):
             self.frame.destroy()
-            # from views.main_window import MainWindow
-            # MainWindow(self.master)
-                        
-            # from views.student_window import StudentWindow
-            # StudentWindow(self.master)
+
+            from views.mathang_window import MatHangWindow
+            MatHangWindow(self.master)
         else:
             self.message_label.config(text="❌ Login failed! Please try again.")

@@ -8,10 +8,6 @@ def main():
     root=Tk()
     root.title("Warehouse management")
 
-    print("📦 Creating database tables...")
-    # Base.metadata.create_all(bind=engine)
-
-
     #Setup width and height
     window_width = 800
     window_height = 600
