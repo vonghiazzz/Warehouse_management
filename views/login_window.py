@@ -6,7 +6,7 @@ from PIL import Image, ImageTk
 class LoginWindow:
     def __init__(self, master):
         self.master = master
-        self.master.title("Manage Student - Login")
+        self.master.title("Warehouse Management - Login")
         self.master.resizable(False, False)
 
         self.theme = theme.CURRENT_THEME
@@ -18,7 +18,7 @@ class LoginWindow:
         #Load icon
         sun_img = Image.open("assets/sun.png").resize((24, 24), Image.Resampling.LANCZOS)
         moon_img = Image.open("assets/moon.png").resize((24, 24), Image.Resampling.LANCZOS)
-        banner_img = Image.open("assets/banner.png").resize((300, 200), Image.Resampling.LANCZOS)
+        banner_img = Image.open("assets/kho.jpg").resize((300, 200), Image.Resampling.LANCZOS)
 
         self.banner = ImageTk.PhotoImage(banner_img)
         self.sun_icon = ImageTk.PhotoImage(sun_img)
@@ -36,7 +36,7 @@ class LoginWindow:
         # Title
         self.title_lable = Label(
             self.frame,
-            text= "Manage Student Login",
+            text= "Manage Warehouse Login",
             font =("Arial", 16, "bold"),
             bg = self.theme["bg_color"], fg = self.theme["text_color"]
         )
@@ -143,7 +143,8 @@ class LoginWindow:
         if LoginController.authenticate(username, password):
             self.frame.destroy()
             # from views.main_window import MainWindow
-            # MainWindow(self.master)            
+            # MainWindow(self.master)
+                        
             # from views.student_window import StudentWindow
             # StudentWindow(self.master)
         else:
