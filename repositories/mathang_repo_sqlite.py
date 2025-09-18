@@ -28,3 +28,21 @@ class MatHangRepoSQLite(IMatHangRepo):
         row = cur.fetchone()
         conn.close()
         return MatHang.from_row(row) if row else None
+
+class MatHangRepository:
+    @staticmethod
+    def add(MatHang: MatHang):
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO MatHang (TenHang) VALUES (?)", (MatHang.ten_hang,))
+        conn.commit()
+        conn.close()
+
+    @staticmethod
+    def get_all():
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT MaHang, TenHang FROM MatHang")
+        rows = cursor.fetchall()
+        conn.close()
+        return [MatHang(ma_hang=row[0], ten_hang=row[1]) for row in rows]
