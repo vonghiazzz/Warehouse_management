@@ -122,6 +122,18 @@ class NhapKhoWindow:
         )
         self.suplier_entry.grid(row=3, column=1, pady=2)
 
+        Label(
+            form,
+            text="Note:",
+            width=15,
+            anchor="w",
+            bg=self.theme["bg_color"],
+            fg=self.theme["text_color"],
+        ).grid(row=4, column=0, pady=2)
+        self.suplier_entry = Entry(
+            form, width=30, bg=self.theme["entry_bg"], fg=self.theme["entry_fg"]
+        )
+        self.suplier_entry.grid(row=4, column=1, pady=2)
         
         Label(
             form,
