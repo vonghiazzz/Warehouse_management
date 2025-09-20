@@ -1,9 +1,7 @@
-from datetime import datetime
-from entities.mathang import MatHang
 from repositories.mathang_repo_sqlite import MatHangRepository
-from services.interfaces.i_mathang_service import IMatHangService
+from entities.mathang import MatHang
 
-class MatHangService(IMatHangService):
+class MatHangController:
     def __init__(self):
         self.repo = MatHangRepository()
 

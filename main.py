@@ -1,8 +1,12 @@
 from tkinter import Tk
+from database.init_db import init_db
 from views.login_window import LoginWindow
+from views.mathang_window import MatHangWindow
 from PIL import Image, ImageTk
 # from models.database import Base, engine
 # from models import major, student
+
+
 
 def main():
     root=Tk()
@@ -37,4 +41,5 @@ def main():
     root.mainloop()
 
 if __name__ == "__main__":
+    init_db()
     main()

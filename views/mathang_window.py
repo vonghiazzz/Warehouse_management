@@ -1,19 +1,18 @@
 from tkinter import *
 from tkinter import ttk
 from utils import theme
-# from controllers.mathang_controller import MatHangController
-# from models.database import SessionLocal
-# from controllers.major_controller import MajorController
 from tkinter import messagebox
 from datetime import datetime
+from controllers.mathang_controller import MatHangController
 
 
 class MatHangWindow:
     def __init__(self, master):
+        self.controller = MatHangController()
         self.master = master
         self.master.title("Quản Lý Mặt Hàng")
         self.master.resizable(True, True)
-
+        # self.load_data()  # <-- XÓA DÒNG NÀY
         # Lấy danh sách ngành học
         # db = SessionLocal()
         # majors = MajorController(db).get_majors()
@@ -158,7 +157,7 @@ class MatHangWindow:
             bg=self.theme["button_color"],
             fg=self.theme["button_text"],
             width=5,
-            command='',
+            command=self.delete_item,
             ).pack(side=RIGHT, padx=2)
 
         Button(
@@ -167,7 +166,7 @@ class MatHangWindow:
             bg=self.theme["button_color"],
             fg=self.theme["button_text"],
             width=5,
-            command='',
+            command=self.update_item,
             ).pack(side=RIGHT, padx=2)
 
         Button(
@@ -176,7 +175,7 @@ class MatHangWindow:
             bg=self.theme["button_color"],
             fg=self.theme["button_text"],
             width=5,
-            command="",
+            command=self.save_item,
             ).pack(side=RIGHT, padx=2)
 
         # Thêm bảng hiển thị danh sách sinh viên
@@ -197,7 +196,7 @@ class MatHangWindow:
         self.tree.pack(fill=BOTH, expand=True, pady=10)
         # self.tree.bind("<<TreeviewSelect>>", self.on_tree_select)
         # self.load_students()
-
+        self.load_data()
     # def load_students(self):
     #     # Delete old data
     #     for item in self.tree.get_children():
@@ -284,12 +283,133 @@ class MatHangWindow:
     #     except Exception as e:
     #         messagebox.showerror("Error", f"Error when adding a student:\n{e}")
     #         print("Error when adding a student:", e)
+    def load_data(self):
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+
+        items = self.controller.get_all_mat_hang()
+        for mh in items:
+            self.tree.insert("", "end", values=(
+                mh.ma_hang,
+                mh.ten_hang,
+                mh.don_vi,
+                mh.loai,
+                mh.mo_ta,
+                mh.ton_toi_thieu,
+                mh.trang_thai,
+                mh.ngay_tao if hasattr(mh, "ngay_tao") else ""
+            ))
+    def clear_form(self):
+        self.name_entry.delete(0, END)
+        self.type_entry.delete(0, END)
+        self.description_entry.delete(0, END)
+        self.minimum_amount_entry.delete(0, END)
+        self.unit_combobox.current(0)
+        self.status_combobox.current(0)
+
+    def save_item(self):
+        try:
+            # Lấy dữ liệu từ form
+            data = {
+                "ten_hang": self.name_entry.get(),
+                "don_vi": self.unit_var.get(),
+                "loai": self.type_entry.get(),
+                "mo_ta": self.description_entry.get(),
+                "ton_toi_thieu": self.minimum_amount_entry.get(),
+                "trang_thai": self.status_var.get(),
+                "ngay_tao": datetime.now(),
+            }
+
+            # Validate input
+            if not data["ten_hang"]:
+                messagebox.showwarning("Cảnh báo", "Tên hàng không được để trống!")
+                return
+
+            # Gọi controller để thêm mặt hàng mới
+            ma_hang = self.controller.add_mat_hang(data)
+            print(">>> Thêm mặt hàng thành công:", data)
+            # Thêm vào TreeView
+            self.tree.insert("", "end", values=(
+                ma_hang,
+                data["ten_hang"],
+                data["don_vi_tinh"],
+                data["loai_hang"],
+                data["mo_ta"],
+                data["ton_toi_thieu"],
+                data["trang_thai"],
+                data["ngay_tao"].strftime("%Y-%m-%d %H:%M:%S")
+            ))
+
+            messagebox.showinfo("Thành công", "Thêm mặt hàng thành công.")
+            self.clear_form()
+        except Exception as e:
+            messagebox.showerror("Lỗi", f"Không thể lưu mặt hàng: {e}")
+
 
     def open_nhap_kho(self):
         self.frame.destroy()
         from views.nhapkho_window import NhapKhoWindow
 
         NhapKhoWindow(self.master)
+
+    def update_item(self):
+        selected = self.tree.selection()
+        if not selected:
+            messagebox.showwarning("Cảnh báo", "Vui lòng chọn mặt hàng để cập nhật.")
+            return
+
+        item_id = selected[0]
+        values = self.tree.item(item_id, "values")
+        ma_hang = values[0]  # cột Mã Hàng
+
+        try:
+            # Lấy dữ liệu mới từ form
+            data = {
+                "ten_hang": self.name_entry.get(),
+                "don_vi": self.unit_var.get(),
+                "loai": self.type_entry.get(),
+                "mo_ta": self.description_entry.get(),
+                "ton_toi_thieu": self.minimum_amount_entry.get(),
+                "trang_thai": self.status_var.get()
+            }
+
+            # Gọi controller/service để update DB
+            self.controller.update_mat_hang(ma_hang, data)
+
+            # Cập nhật lại dòng trong TreeView
+            self.tree.item(item_id, values=(
+                ma_hang,
+                data["ten_hang"],
+                data["don_vi"],
+                data["loai"],
+                data["mo_ta"],
+                data["ton_toi_thieu"],
+                data["trang_thai"],
+                values[7]  # giữ nguyên Ngày Tạo cũ
+            ))
+
+            messagebox.showinfo("Thành công", "Cập nhật mặt hàng thành công.")
+        except Exception as e:
+            messagebox.showerror("Lỗi", f"Không thể cập nhật mặt hàng: {e}")
+
+
+    def delete_item(self):
+        selected = self.tree.selection()
+        if not selected:
+            messagebox.showwarning("Cảnh báo", "Vui lòng chọn mặt hàng để xóa.")
+            return
+
+        for item in selected:
+            values = self.tree.item(item, "values")
+            ma_hang = values[0]  # lấy MaHang từ cột đầu tiên
+            try:
+                # Gọi service để xóa mềm (soft delete)
+                self.controller.delete_mat_hang(ma_hang)
+                # Xóa khỏi TreeView
+                self.tree.delete(item)
+                messagebox.showinfo("Thành công", "Xóa mặt hàng thành công.")
+            except Exception as e:
+                messagebox.showerror("Lỗi", f"Không thể xóa mặt hàng: {e}")
 
     # def delete_form(self):
     #     self.mssv_entry.delete(0, END)

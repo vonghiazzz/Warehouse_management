@@ -1,8 +1,15 @@
 CREATE TABLE IF NOT EXISTS MatHang (
     MaHang INTEGER PRIMARY KEY AUTOINCREMENT,
     TenHang TEXT UNIQUE NOT NULL,
-    IsDeleted TEXT NOT NULL
+    DonViTinh TEXT,
+    LoaiHang TEXT,
+    MoTa TEXT,
+    TonToiThieu INTEGER DEFAULT 0,
+    TrangThai TEXT,
+    NgayTao TEXT DEFAULT (datetime('now')), 
+    IsDeleted INTEGER DEFAULT 0
 );
+
 
 CREATE TABLE IF NOT EXISTS NhapKho (
     ID INTEGER PRIMARY KEY AUTOINCREMENT,

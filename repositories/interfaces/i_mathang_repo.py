@@ -1,11 +1,23 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional
 from entities.mathang import MatHang
 
-class IMatHangRepo(ABC):
+class IMatHangRepository(ABC):
     @abstractmethod
-    def add(self, item: MatHang) -> MatHang: ...
+    def add(self, mat_hang: MatHang):
+        pass
+
     @abstractmethod
-    def get_all(self) -> List[MatHang]: ...
+    def get_all(self) -> list[MatHang]:
+        pass
+
     @abstractmethod
-    def get_by_name(self, tenhang: str) -> Optional[MatHang]: ...
+    def get_by_id(self, ma_hang: int) -> MatHang | None:
+        pass
+
+    @abstractmethod
+    def update(self, mat_hang: MatHang):
+        pass
+
+    @abstractmethod
+    def soft_delete(self, ma_hang: int):
+        pass
