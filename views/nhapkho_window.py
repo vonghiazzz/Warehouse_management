@@ -121,7 +121,6 @@ class NhapKhoWindow:
             form, width=30, bg=self.theme["entry_bg"], fg=self.theme["entry_fg"]
         )
         self.suplier_entry.grid(row=3, column=1, pady=2)
-
         
         Label(
             form,

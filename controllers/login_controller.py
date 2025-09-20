@@ -1,4 +1,4 @@
-from models.user import User
+from entities.user import User
 
 class LoginController:
     @staticmethod
