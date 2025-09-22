@@ -23,7 +23,7 @@ class MatHangController:
         if any(item.ten_hang.lower() == mat_hang.ten_hang.lower() and item.ma_hang != ma_hang for item in all_items):
             return False
 
-        self.repo.update(self, mat_hang)
+        self.repo.update(mat_hang)
         return True
 
     def delete_mat_hang(self, ma_hang: int) -> bool:

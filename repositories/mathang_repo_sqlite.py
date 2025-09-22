@@ -87,7 +87,7 @@ class MatHangRepository(IMatHangRepository):
         cursor.execute(
             """
             UPDATE MatHang 
-            SET TenHang=?, DonVi=?, Loai=?, MoTa=?, TonToiThieu=?, TrangThai=? 
+            SET TenHang=?, DonViTinh=?, LoaiHang=?, MoTa=?, TonToiThieu=?, TrangThai=? 
             WHERE MaHang=? AND IsDeleted=0
             """,
             (
