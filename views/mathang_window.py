@@ -335,7 +335,7 @@ class MatHangWindow:
 
             # Thêm vào TreeView
             self.tree.insert("", "end", values=(
-                ma_hang,
+                data.ma_hang,
                 data.ten_hang,
                 data.don_vi,
                 data.loai,
@@ -431,6 +431,7 @@ class MatHangWindow:
                 self.controller.delete_mat_hang(ma_hang)
                 # Xóa khỏi TreeView
                 self.tree.delete(item)
+                self.clear_form()
                 messagebox.showinfo("Thành công", "Xóa mặt hàng thành công.")
             except Exception as e:
                 messagebox.showerror("Lỗi", f"Không thể xóa mặt hàng: {e}")

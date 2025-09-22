@@ -3,7 +3,7 @@ from entities.mathang import MatHang
 
 class IMatHangRepository(ABC):
     @abstractmethod
-    def add(self, mat_hang: MatHang):
+    def add(self, mat_hang: MatHang) -> int:
         pass
 
     @abstractmethod
