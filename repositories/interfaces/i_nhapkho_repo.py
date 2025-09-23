@@ -26,6 +26,3 @@ class INhapKhoRepository(ABC):
     def search_nhap_kho(self, keyword: str) -> list[NhapKho]:
         pass
 
-    @abstractmethod
-    def validate_nhap_kho(self, data: NhapKho):
-        pass
