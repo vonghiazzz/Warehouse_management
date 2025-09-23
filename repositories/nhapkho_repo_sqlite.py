@@ -7,18 +7,6 @@ class NhapKhoRepository(INhapKhoRepository):
     def add(self, nhap_kho: NhapKho) -> int:
         with get_connection() as conn:
             cursor = conn.cursor()
-                # self.id = id
-                # self.ma_hang = ma_hang
-                # self.ngay_nhap = ngay_nhap
-                # self.so_luong = so_luong
-                # self.gia_nhap = gia_nhap
-                # self.nha_cung_cap = nha_cung_cap
-                # self.nhan_vien_nhap = nhan__vien_nhap   
-                # self.han_su_dung = han_su_dung
-                # self.so_hoa_don = so_hoa_don
-                # self.ghi_chu = ghi_chu
-                # self.ngay_tao = ngay_tao
-                # self.isDelete = isDelete
             cursor.execute(
                 """
                 INSERT INTO NhapKho 
@@ -163,44 +151,3 @@ class NhapKhoRepository(INhapKhoRepository):
                 for row in rows
             ]
         
-    def validate_nhap_kho(self, data: NhapKho):
-        errors = []
-
-        if data.so_luong <= 0:
-            errors.append("Số lượng phải lớn hơn 0.")
-
-        if data.gia_nhap <= 0:
-            errors.append("Giá nhập phải lớn hơn 0.")
-
-        if not data.ma_hang:
-            errors.append("Mã hàng không được để trống.")
-
-        if not data.so_hoa_don.strip():
-            errors.append("Số hóa đơn không được để trống.")
-
-        if len(data.so_hoa_don) > 50:
-            errors.append("Số hóa đơn không được vượt quá 50 ký tự.")
-
-        if len(data.ghi_chu) > 200:
-            errors.append("Ghi chú không được vượt quá 200 ký tự.")
-
-        if len(data.nha_cung_cap) > 100:
-            errors.append("Nhà cung cấp không được vượt quá 100 ký tự.")
-
-        if len(data.nhan_vien_nhap) > 100:
-            errors.append("Nhân viên nhập không được vượt quá 100 ký tự.")
-
-        if not data.nha_cung_cap.strip():
-            errors.append("Nhà cung cấp không được để trống.")
-
-        if not data.nhan_vien_nhap.strip():
-            errors.append("Nhân viên nhập không được để trống.")
-
-        # Check hạn sử dụng (nếu có)
-        if data.han_su_dung:
-            try:
-                datetime.strptime(data.han_su_dung, "%Y-%m-%d")
-            except ValueError:
-                errors.append("Hạn sử dụng phải theo định dạng YYYY-MM-DD.")
-
-        return errors

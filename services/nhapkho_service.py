@@ -81,9 +81,9 @@ class NhapKhoService(INhapKhoService):
         # Hạn sử dụng
         try:
             if data.han_su_dung:
-                datetime.strptime(data.han_su_dung, "%Y-%m-%d")
+                datetime.strptime(data.han_su_dung, "%m/%d/%Y")
         except ValueError:
-            errors.append("Hạn sử dụng phải theo định dạng YYYY-MM-DD.")
+            errors.append("Hạn sử dụng phải theo định dạng mm/dd/yyyy.")
         except Exception:
             errors.append("Lỗi xử lý hạn sử dụng.")
 
