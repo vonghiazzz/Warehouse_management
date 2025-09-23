@@ -13,7 +13,7 @@ def main():
     root.title("Warehouse management")
 
     #Setup width and height
-    window_width = 800
+    window_width = 1200
     window_height = 600
 
     # Get width and height of screen
