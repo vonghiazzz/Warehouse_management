@@ -1,25 +1,25 @@
 from abc import ABC, abstractmethod
 from entities.nhapkho import NhapKho
 
-class INhapKhoRepository(ABC):
+class INhapKhoService(ABC):
     @abstractmethod
-    def add(self, nhap_kho: NhapKho) -> int:
+    def add_nhap_kho(self, nhap_kho: NhapKho) -> bool:
         pass
 
     @abstractmethod
-    def get_all(self) -> list[NhapKho]:
+    def get_all_nhap_kho(self) -> list[NhapKho]:
         pass
 
     @abstractmethod
-    def get_by_id(self, nhap_kho: int) -> NhapKho | None:
+    def get_nhap_kho_by_id(self, nhap_kho: int) -> NhapKho | None:
         pass
 
     @abstractmethod
-    def update(self, nhap_kho: NhapKho):
+    def update_nhap_kho(self, nhap_kho: NhapKho) -> bool:
         pass
 
     @abstractmethod
-    def soft_delete(self, nhap_kho: int):
+    def delete_nhap_kho(self, nhap_kho: int) -> bool:
         pass
 
     @abstractmethod
