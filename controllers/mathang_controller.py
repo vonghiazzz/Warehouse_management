@@ -5,12 +5,11 @@ class MatHangController:
     def __init__(self):
         self.repo = MatHangRepository()
 
-    def add_mat_hang(self, mat_hang: MatHang) -> bool:
+    def add_mat_hang(self, mat_hang: MatHang) -> int:
         all_items = self.repo.get_all()
         if any(item.ten_hang.lower() == mat_hang.ten_hang.lower() for item in all_items):
-            return False
-        self.repo.add(mat_hang)
-        return True
+            return -1
+        return self.repo.add(mat_hang)
 
     def get_all_mat_hang(self) -> list[MatHang]:
         return self.repo.get_all()
@@ -23,7 +22,7 @@ class MatHangController:
         if any(item.ten_hang.lower() == mat_hang.ten_hang.lower() and item.ma_hang != ma_hang for item in all_items):
             return False
 
-        self.repo.update(self, mat_hang)
+        self.repo.update(mat_hang)
         return True
 
     def delete_mat_hang(self, ma_hang: int) -> bool:
