@@ -5,30 +5,51 @@ class MatHangController:
     def __init__(self):
         self.repo = MatHangRepository()
 
-    def add_mat_hang(self, mat_hang: MatHang) -> int:
-        all_items = self.repo.get_all()
-        if any(item.ten_hang.lower() == mat_hang.ten_hang.lower() for item in all_items):
-            return -1
-        return self.repo.add(mat_hang)
+    def add_mat_hang(self, mat_hang: MatHang) -> int | None:
+        try:
+            all_items = self.repo.get_all()
+            if any(item.ten_hang.lower() == mat_hang.ten_hang.lower() for item in all_items):
+                return -1
+            return self.repo.add(mat_hang)
+        except Exception as e:
+            print(f"Lỗi SQL khi thêm mặt hàng: {e}")
+            return None
+        
 
-    def get_all_mat_hang(self) -> list[MatHang]:
-        return self.repo.get_all()
+    def get_all_mat_hang(self) -> list[MatHang] | None:
+        try:
+            return self.repo.get_all()
+        except Exception as e:
+            print(f"Lỗi SQL khi lấy danh sách mặt hàng: {e}")
+            return None
 
     def get_mat_hang_by_id(self, ma_hang: int) -> MatHang | None:
-        return self.repo.get_by_id(ma_hang)
+        try:
+            return self.repo.get_by_id(ma_hang)
+        except Exception as e:
+            print(f"Lỗi SQL khi lấy mặt hàng theo ID {ma_hang}: {e}")
+            return None
 
     def update_mat_hang(self, ma_hang: int, mat_hang: MatHang) -> bool:
-        all_items = self.repo.get_all()
-        if any(item.ten_hang.lower() == mat_hang.ten_hang.lower() and item.ma_hang != ma_hang for item in all_items):
-            return False
+        try:
+            all_items = self.repo.get_all()
+            if any(item.ten_hang.lower() == mat_hang.ten_hang.lower() and item.ma_hang != ma_hang for item in all_items):
+                return False
 
-        self.repo.update(mat_hang)
-        return True
+            self.repo.update(mat_hang)
+            return True
+        except Exception as e:
+            print(f"Lỗi SQL khi cập nhật mặt hàng {ma_hang}: {e}")
+            return False
 
     def delete_mat_hang(self, ma_hang: int) -> bool:
-        item = self.repo.get_by_id(ma_hang)
-        if not item:
-            return False
+        try:
+            item = self.repo.get_by_id(ma_hang)
+            if not item:
+                return False
 
-        self.repo.soft_delete(ma_hang)
-        return True
+            self.repo.soft_delete(ma_hang)
+            return True
+        except Exception as e:
+            print(f"Lỗi SQL khi xóa mặt hàng {ma_hang}: {e}")
+            return False
