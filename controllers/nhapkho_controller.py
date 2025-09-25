@@ -7,6 +7,10 @@ class NhapKhoController:
 
     def validate_nhap_kho(self, data: NhapKho):
         return self.service.validate_nhap_kho(data)
+    
+    def validate_search(self, field: str, keyword: str) -> str | None:
+        return self.service.validate_search_input(field, keyword)
+
 
     def add_nhap_kho(self, nhap_kho: NhapKho) -> int:
         return self.service.add_nhap_kho(nhap_kho)

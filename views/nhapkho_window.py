@@ -117,7 +117,7 @@ class NhapKhoWindow:
         # Combobox chọn trường tìm kiếm
         self.search_field = StringVar()
         self.field_combobox = ttk.Combobox(form, textvariable=self.search_field, width=20, state="readonly")
-        self.field_combobox["values"] = ("Tất cả", "Mã hàng", "Nhà cung cấp", "Nhân viên nhập", "Số hóa đơn","Giá nhập", "Ghi chú")
+        self.field_combobox["values"] = ("Tất cả", "Mặt hàng", "Nhà cung cấp", "Nhân viên nhập", "Số hóa đơn","Giá nhập", "Ghi chú")
         self.field_combobox.current(0)  # mặc định chọn "Tất cả"
         self.field_combobox.grid(row=4, column=2, pady=2)
 
@@ -137,7 +137,7 @@ class NhapKhoWindow:
 
 
         # TreeView hiển thị dữ liệu
-        columns = ("ID", "Mã hàng", "Số lượng", "Giá nhập", "Nhà cung cấp",
+        columns = ("ID", "Mặt hàng", "Số lượng", "Giá nhập", "Nhà cung cấp",
                    "Nhân viên nhập", "Hạn sử dụng", "Số hóa đơn", "Ghi chú", "Ngày tạo")
         self.tree = ttk.Treeview(self.frame, columns=columns, show="headings")
         for col in columns:
@@ -169,9 +169,11 @@ class NhapKhoWindow:
         for row in self.tree.get_children():
             self.tree.delete(row)
         items = self.controller.get_all_nhap_kho()
+
         for nk in items:
+            ma_ten = next((k for k, v in self.mathang_map.items() if v == nk.ma_hang), str(nk.ma_hang))
             self.tree.insert("", "end", values=(
-                nk.id, nk.ma_hang, nk.so_luong, nk.gia_nhap, nk.nha_cung_cap,
+                nk.id, ma_ten, nk.so_luong, nk.gia_nhap, nk.nha_cung_cap,
                 nk.nhan_vien_nhap, nk.han_su_dung, nk.so_hoa_don, nk.ghi_chu,
                 nk.ngay_tao if nk.ngay_tao else ""
             ))
@@ -282,54 +284,41 @@ class NhapKhoWindow:
         self.note_entry.delete(0, END)
         self.note_entry.insert(0, values[8])
 
-    def search_items(self):
+    
+    def filter_data(self, event=None):
         keyword = self.search_var.get().lower().strip()
-        if not keyword:
-            self.load_data()
+        field = self.search_field.get()
+
+        # gọi validate ở service qua controller
+        error = self.controller.validate_search(field, keyword)
+        if error:
+            messagebox.showerror("Lỗi tìm kiếm", error)
             return
 
         # Xóa dữ liệu cũ
         for row in self.tree.get_children():
             self.tree.delete(row)
 
-        # Lấy toàn bộ rồi lọc
         items = self.controller.get_all_nhap_kho()
-        filtered = []
+
         for nk in items:
-            if (keyword in str(nk.ma_hang).lower() or
-                keyword in str(nk.nha_cung_cap).lower() or
-                keyword in str(nk.nhan_vien_nhap).lower() or
-                keyword in str(nk.so_hoa_don).lower() or
-                keyword in str(nk.ghi_chu).lower()):
-                filtered.append(nk)
+            # Lấy "mã - tên" để hiển thị
+            ma_ten = next((k for k, v in self.mathang_map.items() if v == nk.ma_hang), str(nk.ma_hang))
 
-        for nk in filtered:
-            self.tree.insert("", "end", values=(
-                nk.id, nk.ma_hang, nk.so_luong, nk.gia_nhap, nk.nha_cung_cap,
-                nk.nhan_vien_nhap, nk.han_su_dung, nk.so_hoa_don, nk.ghi_chu,
-                nk.ngay_tao if nk.ngay_tao else ""
-            ))
-    def filter_data(self, event=None):
-        keyword = self.search_var.get().lower()
-        field = self.search_field.get()
-
-        for row in self.tree.get_children():
-            self.tree.delete(row)
-
-        items = self.controller.get_all_nhap_kho()
-        for nk in items:
             values = (
-                nk.id, nk.ma_hang, nk.so_luong, nk.gia_nhap, nk.nha_cung_cap,
-                nk.nhan_vien_nhap, nk.han_su_dung, nk.so_hoa_don, nk.gia_nhap ,nk.ghi_chu,
+                nk.id, ma_ten, nk.so_luong, nk.gia_nhap, nk.nha_cung_cap,
+                nk.nhan_vien_nhap, nk.han_su_dung, nk.so_hoa_don, nk.ghi_chu,
                 nk.ngay_tao if nk.ngay_tao else ""
             )
 
             # logic lọc
             match = False
-            if field == "Tất cả":
+            if not keyword:
+                match = True
+            elif field == "Tất cả":
                 match = any(keyword in str(v).lower() for v in values)
-            elif field == "Mã hàng":
-                match = keyword in str(nk.ma_hang).lower()
+            elif field == "Mặt hàng":
+                match = keyword in ma_ten.lower()
             elif field == "Nhà cung cấp":
                 match = keyword in str(nk.nha_cung_cap).lower()
             elif field == "Nhân viên nhập":
@@ -343,3 +332,6 @@ class NhapKhoWindow:
 
             if match:
                 self.tree.insert("", "end", values=values)
+
+
+
