@@ -5,11 +5,14 @@ from utils import theme
 from tkinter import messagebox
 from datetime import datetime
 from controllers.mathang_controller import MatHangController
+from controllers.nhapkho_controller import NhapKhoController
 
 
 class MatHangWindow:
     def __init__(self, master):
         self.controller = MatHangController()
+        self.nhap_kho_controller = NhapKhoController()
+
         self.master = master
         self.master.title("Quản Lý Mặt Hàng")
         self.master.resizable(True, True)
@@ -190,6 +193,7 @@ class MatHangWindow:
             self.tree.column(col, width=100, anchor="center")
         self.tree.pack(fill=BOTH, expand=True, pady=10)
         self.tree.bind("<<TreeviewSelect>>", self.on_tree_select)
+        self.tree.bind("<Double-1>", self.show_history_dialog)
         self.load_data()
     
     def load_data(self):
@@ -198,6 +202,18 @@ class MatHangWindow:
 
         items = self.controller.get_all_mat_hang()
         for mh in items:
+            # Định dạng ngày tạo nếu có
+            if hasattr(mh, "ngay_tao") and mh.ngay_tao:
+                try:
+                    if isinstance(mh.ngay_tao, str):
+                        dt = datetime.strptime(mh.ngay_tao, "%Y-%m-%d %H:%M:%S")
+                    else:
+                        dt = mh.ngay_tao
+                    ngay_tao_str = dt.strftime("%m/%d/%Y")
+                except Exception:
+                    ngay_tao_str = str(mh.ngay_tao)
+            else:
+                ngay_tao_str = ""
             self.tree.insert("", "end", values=(
                 mh.ma_hang,
                 mh.ten_hang,
@@ -206,7 +222,7 @@ class MatHangWindow:
                 mh.mo_ta,
                 mh.ton_toi_thieu,
                 mh.trang_thai,
-                mh.ngay_tao if hasattr(mh, "ngay_tao") else ""
+                ngay_tao_str
             ))
     def clear_form(self):
         self.name_entry.delete(0, END)
@@ -352,18 +368,78 @@ class MatHangWindow:
             except Exception as e:
                 messagebox.showerror("Lỗi", f"Không thể xóa mặt hàng: {e}")
 
-    # def delete_form(self):
-    #     self.mssv_entry.delete(0, END)
-    #     # Reset combobox major
-    #     if self.major_combobox["values"]:
-    #         self.major_var.set(self.major_combobox["values"][0])
-    #     else:
-    #         self.major_var.set("")
-    #     self.name_entry.delete(0, END)
-    #     self.birthday_entry.delete(0, END)
-    #     self.phone_entry.delete(0, END)
-    #     self.email_entry.delete(0, END)
+    def show_history_dialog(self, event):
+        selected = self.tree.selection()
+        if not selected:
+            return
+        values = self.tree.item(selected[0], "values")
+        ma_hang = values[0]
+
+        history = self.nhap_kho_controller.get_history_by_mat_hang(int(ma_hang))
+
+        if not history:
+            messagebox.showinfo("Lịch sử nhập kho", "Không có lịch sử nhập kho cho mặt hàng này.")
+            return
+
+        top = Toplevel(self.master)
+        top.title(f"Lịch sử nhập kho - Mã hàng {ma_hang}")
+
+        columns = [
+            "ID", "Tên hàng", "Số lượng", "Giá nhập", "Nhà cung cấp",
+            "Nhân viên nhập", "Hạn sử dụng", "Số hóa đơn", "Ghi chú", "Ngày tạo"
+        ]
+        tree = ttk.Treeview(top, columns=columns, show="headings", height=10)
+        for col in columns:
+            tree.heading(col, text=col)
+            tree.column(col, width=100, anchor="center")
+
+        # Thêm scrollbar dọc
+        scrollbar = ttk.Scrollbar(top, orient="vertical", command=tree.yview)
+        tree.configure(yscrollcommand=scrollbar.set)
+        tree.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+
+        # Đổ dữ liệu vào treeview
+        for item in history:
+            # Format hạn sử dụng
+            han_su_dung = item.han_su_dung
+            if han_su_dung:
+                try:
+                    if isinstance(han_su_dung, str):
+                        dt = datetime.strptime(han_su_dung, "%Y-%m-%d")
+                    else:
+                        dt = han_su_dung
+                    han_su_dung = dt.strftime("%m/%d/%Y")
+                except Exception:
+                    han_su_dung = str(item.han_su_dung)
+            # Format ngày tạo
+            ngay_tao = item.ngay_tao
+            if ngay_tao:
+                try:
+                    if isinstance(ngay_tao, str):
+                        dt = datetime.strptime(ngay_tao, "%Y-%m-%d %H:%M:%S")
+                    else:
+                        dt = ngay_tao
+                    ngay_tao = dt.strftime("%m/%d/%Y")
+                except Exception:
+                    ngay_tao = str(item.ngay_tao)
+
+            tree.insert(
+                "",
+                "end",
+                values=(
+                    item.id,
+                    item.ten_hang,
+                    item.so_luong,
+                    item.gia_nhap,
+                    item.nha_cung_cap,
+                    item.nhan_vien_nhap,
+                    han_su_dung,
+                    item.so_hoa_don,
+                    item.ghi_chu,
+                    ngay_tao,
+                ),
+            )
 
 
 
-    

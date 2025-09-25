@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from CTO.nhapkho_history_dto import NhapKhoHistoryDTO
 from entities.nhapkho import NhapKho
 
 class INhapKhoService(ABC):
@@ -12,6 +13,10 @@ class INhapKhoService(ABC):
 
     @abstractmethod
     def get_nhap_kho_by_id(self, nhap_kho: int) -> NhapKho | None:
+        pass
+    
+    @abstractmethod
+    def get_history_by_mat_hang(self, ma_hang: int) -> list[NhapKhoHistoryDTO]:
         pass
 
     @abstractmethod

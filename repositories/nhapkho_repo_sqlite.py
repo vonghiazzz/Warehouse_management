@@ -1,3 +1,4 @@
+from CTO.nhapkho_history_dto import NhapKhoHistoryDTO
 from database.database import get_connection
 from entities.nhapkho import NhapKho
 from repositories.interfaces.i_nhapkho_repo import INhapKhoRepository
@@ -88,6 +89,38 @@ class NhapKhoRepository(INhapKhoRepository):
                     is_delete=row[10],                    
                 )
             return None
+
+    def get_history_by_mat_hang(self, ma_hang: int):
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                SELECT 
+                    nk.ID, mh.TenHang, nk.SoLuong, nk.GiaNhap, nk.NhaCungCap, 
+                    nk.NhanVienNhap, nk.HanSuDung, nk.SoHoaDon, nk.GhiChu, nk.NgayTao, nk.IsDeleted
+                FROM NhapKho nk
+                JOIN MatHang mh ON nk.MaHang = mh.MaHang
+                WHERE nk.MaHang = ? AND nk.IsDeleted = 0
+                """,
+                (ma_hang,),
+            )
+            rows = cursor.fetchall()
+            return [
+                NhapKhoHistoryDTO(
+                    id = row[0],
+                    ten_hang=row[1],
+                    so_luong=row[2],
+                    gia_nhap=row[3],
+                    nha_cung_cap=row[4],
+                    nhan_vien_nhap=row[5],
+                    han_su_dung=row[6],
+                    so_hoa_don=row[7],
+                    ghi_chu=row[8],
+                    ngay_tao=row[9],
+                    is_delete=row[10],                    
+                )
+                for row in rows
+            ]
 
     def update(self, nhap_kho: NhapKho):
         with get_connection() as conn:

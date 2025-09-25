@@ -1,3 +1,4 @@
+from CTO.nhapkho_history_dto import NhapKhoHistoryDTO
 from services.nhapkho_service import NhapKhoService
 from entities.nhapkho import NhapKho
 
@@ -20,7 +21,10 @@ class NhapKhoController:
     
     def get_nhap_kho_by_id(self, nhap_kho: int) -> NhapKho | None:
         return self.service.get_nhap_kho_by_id(nhap_kho)
-    
+
+    def get_history_by_mat_hang(self, ma_hang: int) -> list[NhapKhoHistoryDTO]:
+        return self.service.get_history_by_mat_hang(ma_hang)
+
     def update_nhap_kho(self, id: int, nhap_kho: NhapKho) -> bool:
         return self.service.update_nhap_kho(id, nhap_kho)
     
