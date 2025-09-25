@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from entities.nhapkho import NhapKho
+from CTO.nhapkho_history_dto import NhapKhoHistoryDTO
 
 class INhapKhoRepository(ABC):
     @abstractmethod
@@ -12,6 +13,10 @@ class INhapKhoRepository(ABC):
 
     @abstractmethod
     def get_by_id(self, nhap_kho: int) -> NhapKho | None:
+        pass
+
+    @abstractmethod
+    def get_history_by_mat_hang(self, ma_hang: int) -> list[NhapKhoHistoryDTO]:
         pass
 
     @abstractmethod

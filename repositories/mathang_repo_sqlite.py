@@ -107,8 +107,14 @@ class MatHangRepository(IMatHangRepository):
     def soft_delete(self, ma_hang: int):
         with get_connection() as conn:
             cursor = conn.cursor()
+            # Xóa mềm mặt hàng
             cursor.execute(
                 "UPDATE MatHang SET IsDeleted = 1 WHERE MaHang = ?",
+                (ma_hang,),
+            )
+            # Xóa mềm các phiếu nhập kho liên quan
+            cursor.execute(
+                "UPDATE NhapKho SET IsDeleted = 1 WHERE MaHang = ?",
                 (ma_hang,),
             )
             conn.commit()

@@ -1,4 +1,5 @@
 from datetime import datetime
+from CTO.nhapkho_history_dto import NhapKhoHistoryDTO
 from entities.nhapkho import NhapKho
 from repositories.nhapkho_repo_sqlite import NhapKhoRepository
 from services.interfaces.i_nhapkho_service import INhapKhoService
@@ -117,6 +118,9 @@ class NhapKhoService(INhapKhoService):
 
     def get_nhap_kho_by_id(self, id: int) -> NhapKho | None:
         return self.repo.get_by_id(id)
+
+    def get_history_by_mat_hang(self, ma_hang: int) -> list[NhapKhoHistoryDTO]:
+        return self.repo.get_history_by_mat_hang(ma_hang)
 
     def update_nhap_kho(self, id: int, nhap_kho: NhapKho) -> bool:
         existing_item = self.repo.get_by_id(id)
