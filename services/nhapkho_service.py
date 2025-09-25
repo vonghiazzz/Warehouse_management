@@ -39,6 +39,7 @@ class NhapKhoService(INhapKhoService):
         try:
             if not str(data.gia_nhap).strip():
                 errors.append("Giá nhập không được để trống.")
+            
             else:
                 data.gia_nhap = float(data.gia_nhap)
                 if data.gia_nhap < 0:
@@ -47,8 +48,6 @@ class NhapKhoService(INhapKhoService):
                     errors.append("Giá nhập không được quá 100000.")
                 elif any(char in str(data.gia_nhap) for char in "!@#$%^&*()_+=[]{}|;:'\",<>?/\\`~"):
                     errors.append("Giá nhập không được chứa ký tự đặc biệt.")
-                elif not str(data.gia_nhap).isdigit():
-                    errors.append("Giá nhập là số dương.")
            
         except Exception:
             errors.append("Giá nhập phải là số thực.")

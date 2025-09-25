@@ -11,11 +11,25 @@ CREATE TABLE IF NOT EXISTS MatHang (
 );
 
 
+-- CREATE TABLE IF NOT EXISTS NhapKho (
+--     ID INTEGER PRIMARY KEY AUTOINCREMENT,
+--     MaHang INTEGER NOT NULL,
+--     SoLuong INTEGER NOT NULL,
+--     GiaNhap REAL NOT NULL,
+--     FOREIGN KEY (MaHang) REFERENCES MatHang(MaHang)
+-- );
 CREATE TABLE IF NOT EXISTS NhapKho (
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
     MaHang INTEGER NOT NULL,
     SoLuong INTEGER NOT NULL,
     GiaNhap REAL NOT NULL,
+    NhaCungCap TEXT,
+    NhanVienNhap TEXT,
+    HanSuDung TEXT,
+    SoHoaDon TEXT,
+    GhiChu TEXT,
+    NgayTao TEXT DEFAULT (datetime('now')),
+    IsDeleted INTEGER DEFAULT 0,
     FOREIGN KEY (MaHang) REFERENCES MatHang(MaHang)
 );
 

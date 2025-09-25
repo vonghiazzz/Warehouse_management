@@ -54,8 +54,6 @@ class MatHangController:
         except Exception as e:
             print(f"Lỗi SQL khi xóa mặt hàng {ma_hang}: {e}")
             return False
-        self.repo.soft_delete(ma_hang)
-        return True
     
     def validate_mat_hang(self, data: MatHang) -> list[str]:
         return self.service.validate_mat_hang(data)
