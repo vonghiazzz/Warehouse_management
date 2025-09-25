@@ -13,12 +13,6 @@ class MatHangWindow:
         self.master = master
         self.master.title("Quản Lý Mặt Hàng")
         self.master.resizable(True, True)
-        # self.load_data()  # <-- XÓA DÒNG NÀY
-        # Lấy danh sách ngành học
-        # db = SessionLocal()
-        # majors = MajorController(db).get_majors()
-        # db.close()
-        # self.major_map = {major.name: major.id for major in majors}  # name: id
 
         self.theme = theme.CURRENT_THEME
 
@@ -234,10 +228,11 @@ class MatHangWindow:
                 trang_thai=self.status_var.get(),
                 ngay_tao=datetime.now()
             )
-
-            # Validate input
-            if not data.ten_hang:
-                messagebox.showwarning("Cảnh báo", "Tên hàng không được để trống!")
+            errors = self.controller.validate_mat_hang(data)
+            if errors:
+                messagebox.showwarning("Lỗi dữ liệu", "\n".join(errors))
+                return
+            if not messagebox.askyesno("Xác nhận", "Bạn có chắc muốn tạo bản ghi mới?"):
                 return
 
             # Gọi controller để thêm mặt hàng mới
