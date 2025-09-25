@@ -289,6 +289,12 @@ class MatHangWindow:
                 trang_thai=self.status_var.get(),
                 ngay_tao=datetime.now()
             )
+            errors = self.controller.validate_mat_hang(data)
+            if errors:
+                messagebox.showerror("Lỗi dữ liệu", "\n".join(errors))
+                return
+            if not messagebox.askyesno("Xác nhận", "Bạn có chắc muốn cập nhật bản ghi này?"):
+                return
 
             # Gọi controller/service để update DB
             self.controller.update_mat_hang(ma_hang, data)

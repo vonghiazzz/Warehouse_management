@@ -136,6 +136,28 @@ class NhapKhoService(INhapKhoService):
 
         # nếu không trùng, thêm mới
         return self.repo.add(nhap_kho)
+    
+    def validate_search_input(self, field: str, keyword: str) -> str | None:
+        if not keyword:
+            return None  # Cho phép rỗng (hiển thị tất cả)
+
+        if field in ("Mã hàng", "Số hóa đơn", "Số lượng"):
+            if not keyword.isdigit():
+                return f"{field} chỉ được nhập số nguyên."
+        
+        elif field == "Giá nhập":
+            try:
+                float(keyword)  # thử parse số thực
+            except ValueError:
+                return "Giá nhập chỉ được nhập số."
+        
+        elif field in ("Nhà cung cấp", "Nhân viên nhập"):
+            if not all(c.isalpha() or c.isspace() for c in keyword):
+                return f"{field} chỉ được nhập chữ cái và khoảng trắng."
+
+        # không có lỗi
+        return None
+
 
 
     def get_all_nhap_kho(self) -> list[NhapKho]:
