@@ -26,8 +26,14 @@ class NhapKhoService(INhapKhoService):
                 data.so_luong = int(data.so_luong)
                 if data.so_luong <= 0:
                     errors.append("Số lượng phải là số nguyên dương.")
+                elif data.so_luong > 1000:
+                    errors.append("Số lượng không được quá 1000.")
+                elif not str(data.so_luong).isdigit():
+                    errors.append("Số lượng là số nguyên dương.")
+                elif any(char in str(data.so_luong) for char in "!@#$%^&*()_+=[]{}|;:'\",.<>?/\\`~"):
+                    errors.append("Số lượng không được chứa ký tự đặc biệt.")
         except Exception:
-            errors.append("Số lượng phải là số nguyên.")
+            errors.append("Số lượng phải là số nguyên dương.")
 
         # Giá nhập
         try:
@@ -37,6 +43,13 @@ class NhapKhoService(INhapKhoService):
                 data.gia_nhap = float(data.gia_nhap)
                 if data.gia_nhap < 0:
                     errors.append("Giá nhập phải >= 0.")
+                elif data.gia_nhap > 100000:
+                    errors.append("Giá nhập không được quá 100000.")
+                elif any(char in str(data.gia_nhap) for char in "!@#$%^&*()_+=[]{}|;:'\",<>?/\\`~"):
+                    errors.append("Giá nhập không được chứa ký tự đặc biệt.")
+                elif not str(data.gia_nhap).isdigit():
+                    errors.append("Giá nhập là số dương.")
+           
         except Exception:
             errors.append("Giá nhập phải là số thực.")
 
@@ -48,6 +61,10 @@ class NhapKhoService(INhapKhoService):
                 data.so_hoa_don = int(data.so_hoa_don)
                 if data.so_hoa_don <= 0:
                     errors.append("Số hóa đơn phải là số nguyên dương.")
+                elif not str(data.so_hoa_don).isdigit():
+                    errors.append("Số hóa đơn là số nguyên dương.")
+                elif any(char in str(data.so_hoa_don) for char in "!@#$%^&*()_+=[]{}|;:'\",.<>?/\\`~"):
+                    errors.append("Số hóa đơn không được chứa ký tự đặc biệt.")                
         except Exception:
             errors.append("Số hóa đơn phải là số nguyên.")
 
@@ -62,8 +79,12 @@ class NhapKhoService(INhapKhoService):
                 errors.append("Tên nhà cung cấp không được quá 100 ký tự.")
             elif not all(c.isalpha() or c.isspace() for c in data.nha_cung_cap):
                 errors.append("Tên nhà cung cấp chỉ được chứa chữ cái và khoảng trắng.")            
+            elif data.nha_cung_cap.isdigit():
+                errors.append("Tên nhà cung cấp không được là chuỗi số.")
+            elif any(char in data.nha_cung_cap for char in "!@#$%^&*()_+=[]{}|;:'\",.<>?/\\`~"):
+                errors.append("Tên nhà cung cấp không được chứa ký tự đặc biệt.")            
         except Exception:
-            errors.append("Lỗi xử lý nhà cung cấp.")
+            errors.append("Nhà cung cấp phải là chuỗi ký tự.")
 
         # Nhân viên nhập
         try:
@@ -75,13 +96,19 @@ class NhapKhoService(INhapKhoService):
                 errors.append("Tên nhân viên không được quá 50 ký tự.")
             elif not all(c.isalpha() or c.isspace() for c in data.nhan_vien_nhap):
                 errors.append("Tên nhân viên chỉ được chứa chữ cái và khoảng trắng.")
+            elif data.nhan_vien_nhap.isdigit():
+                errors.append("Tên nhân viên không được là chuỗi số.")
+            elif any(char in data.nhan_vien_nhap for char in "!@#$%^&*()_+=[]{}|;:'\",.<>?/\\`~"):
+                errors.append("Tên nhân viên không được chứa ký tự đặc biệt.")
         except Exception:
-            errors.append("Lỗi xử lý nhân viên nhập.")
+            errors.append("Nhân viên nhập phải là chuỗi ký tự.")
 
         # Hạn sử dụng
         try:
             if data.han_su_dung:
                 datetime.strptime(data.han_su_dung, "%m/%d/%Y")
+                if datetime.strptime(data.han_su_dung, "%m/%d/%Y") <= datetime.now():
+                    errors.append("Hạn sử dụng phải là ngày trong tương lai.")                
         except ValueError:
             errors.append("Hạn sử dụng phải theo định dạng mm/dd/yyyy.")
         except Exception:

@@ -21,3 +21,7 @@ class IMatHangService(ABC):
     @abstractmethod
     def delete_mat_hang(self, ma_hang: int) -> bool:
         pass
+
+    @abstractmethod
+    def validate_mat_hang(self, data: MatHang) -> list[str]:
+        pass

@@ -1,9 +1,10 @@
 from repositories.mathang_repo_sqlite import MatHangRepository
 from entities.mathang import MatHang
-
+from services.mathang_service import MatHangService
 class MatHangController:
     def __init__(self):
         self.repo = MatHangRepository()
+        self.service = MatHangService()
 
     def add_mat_hang(self, mat_hang: MatHang) -> int | None:
         try:
@@ -53,3 +54,8 @@ class MatHangController:
         except Exception as e:
             print(f"Lỗi SQL khi xóa mặt hàng {ma_hang}: {e}")
             return False
+        self.repo.soft_delete(ma_hang)
+        return True
+    
+    def validate_mat_hang(self, data: MatHang) -> list[str]:
+        return self.service.validate_mat_hang(data)
