@@ -196,24 +196,67 @@ class MatHangWindow:
         self.tree.bind("<Double-1>", self.show_history_dialog)
         self.load_data()
     
+    # def load_data(self):
+    #     for item in self.tree.get_children():
+    #         self.tree.delete(item)
+
+    #     items = self.controller.get_all_mat_hang()
+    #     for mh in items:
+    #         # Định dạng ngày tạo nếu có
+    #         if hasattr(mh, "ngay_tao") and mh.ngay_tao:
+    #             try:
+    #                 if isinstance(mh.ngay_tao, str):
+    #                     dt = datetime.strptime(mh.ngay_tao, "%m/%d/%Y %H:%M:%S")
+    #                 else:
+    #                     dt = mh.ngay_tao
+    #                 ngay_tao_str = dt.strftime("%m/%d/%Y")
+    #             except Exception:
+    #                 ngay_tao_str = str(mh.ngay_tao)
+    #         else:
+    #             ngay_tao_str = ""
+    #         self.tree.insert("", "end", values=(
+    #             mh.ma_hang,
+    #             mh.ten_hang,
+    #             mh.don_vi,
+    #             mh.loai,
+    #             mh.mo_ta,
+    #             mh.ton_toi_thieu,
+    #             mh.trang_thai,
+    #             ngay_tao_str
+    #         ))
     def load_data(self):
+        # Xóa dữ liệu cũ trên TreeView
         for item in self.tree.get_children():
             self.tree.delete(item)
 
+        # Lấy tất cả mặt hàng
         items = self.controller.get_all_mat_hang()
         for mh in items:
-            # Định dạng ngày tạo nếu có
+            # Xử lý ngày tạo
+            ngay_tao_str = ""
             if hasattr(mh, "ngay_tao") and mh.ngay_tao:
-                try:
-                    if isinstance(mh.ngay_tao, str):
+                dt = None
+                if isinstance(mh.ngay_tao, str):
+                    # Thử parse theo ISO format (SQLite thường lưu thế này)
+                    try:
                         dt = datetime.strptime(mh.ngay_tao, "%Y-%m-%d %H:%M:%S")
-                    else:
-                        dt = mh.ngay_tao
-                    ngay_tao_str = dt.strftime("%m/%d/%Y")
-                except Exception:
+                    except ValueError:
+                        try:
+                            # Nếu bạn có lưu theo dạng Mỹ
+                            dt = datetime.strptime(mh.ngay_tao, "%m/%d/%Y %H:%M:%S")
+                        except ValueError:
+                            dt = None
+                else:
+                    # Nếu DB trả về datetime object thì gán thẳng
+                    dt = mh.ngay_tao
+
+                # Nếu parse được thì format lại
+                if dt:
+                    ngay_tao_str = dt.strftime("%m/%d/%Y %H:%M:%S")
+                else:
                     ngay_tao_str = str(mh.ngay_tao)
-            else:
-                ngay_tao_str = ""
+
+            # Insert vào TreeView
             self.tree.insert("", "end", values=(
                 mh.ma_hang,
                 mh.ten_hang,
@@ -224,6 +267,7 @@ class MatHangWindow:
                 mh.trang_thai,
                 ngay_tao_str
             ))
+
     def clear_form(self):
         self.name_entry.delete(0, END)
         self.type_entry.delete(0, END)
@@ -241,7 +285,7 @@ class MatHangWindow:
                 mo_ta=self.description_entry.get(),
                 ton_toi_thieu=self.minimum_amount_entry.get(),
                 trang_thai=self.status_var.get(),
-                ngay_tao=datetime.now()
+                ngay_tao = datetime.now()
             )
 
             errors = self.controller.validate_mat_hang(data, None)
@@ -325,7 +369,7 @@ class MatHangWindow:
                 data.mo_ta,
                 data.ton_toi_thieu,
                 data.trang_thai,
-                values[7]  # giữ nguyên Ngày Tạo cũ
+                datetime.strptime(values[7], "%m/%d/%Y %H:%M:%S").strftime("%d/%m/%Y")
             ))
 
             messagebox.showinfo("Thành công", "Cập nhật mặt hàng thành công.")
@@ -354,6 +398,8 @@ class MatHangWindow:
         selected = self.tree.selection()
         if not selected:
             messagebox.showwarning("Cảnh báo", "Vui lòng chọn mặt hàng để xóa.")
+            return
+        if not messagebox.askyesno("Xác nhận", "Bạn có chắc muốn xóa mặt hàng đã chọn?"):
             return
 
         for item in selected:
@@ -407,7 +453,7 @@ class MatHangWindow:
             if han_su_dung:
                 try:
                     if isinstance(han_su_dung, str):
-                        dt = datetime.strptime(han_su_dung, "%Y-%m-%d")
+                        dt = datetime.strptime(han_su_dung, "%m/%d/%Y")
                     else:
                         dt = han_su_dung
                     han_su_dung = dt.strftime("%m/%d/%Y")
@@ -418,7 +464,7 @@ class MatHangWindow:
             if ngay_tao:
                 try:
                     if isinstance(ngay_tao, str):
-                        dt = datetime.strptime(ngay_tao, "%Y-%m-%d %H:%M:%S")
+                        dt = datetime.strptime(ngay_tao, "%m/%d%Y %H:%M:%S")
                     else:
                         dt = ngay_tao
                     ngay_tao = dt.strftime("%m/%d/%Y")
