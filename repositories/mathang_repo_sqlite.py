@@ -29,7 +29,58 @@ class MatHangRepository(IMatHangRepository):
             mat_hang.ma_hang = new_id  
             return new_id
 
+    def get_all_not_id(self, ma_hang: int):
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                SELECT MaHang, TenHang, DonViTinh, LoaiHang, MoTa, TonToiThieu, TrangThai, NgayTao, IsDeleted
+                FROM MatHang 
+                WHERE IsDeleted = 0 AND MaHang != ?
+                """,
+                (ma_hang,),
+            )
+            rows = cursor.fetchall()
+            return [
+                MatHang(
+                    ma_hang=row[0],
+                    ten_hang=row[1],
+                    don_vi=row[2],
+                    loai=row[3],
+                    mo_ta=row[4],
+                    ton_toi_thieu=row[5],
+                    trang_thai=row[6],
+                    ngay_tao=row[7],
+                    is_deleted=row[8],
+                )
+                for row in rows
+            ]
 
+    def get_all(self):
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                SELECT MaHang, TenHang, DonViTinh, LoaiHang, MoTa, TonToiThieu, TrangThai, NgayTao, IsDeleted
+                FROM MatHang 
+                WHERE IsDeleted = 0
+                """
+            )
+            rows = cursor.fetchall()
+            return [
+                MatHang(
+                    ma_hang=row[0],
+                    ten_hang=row[1],
+                    don_vi=row[2],
+                    loai=row[3],
+                    mo_ta=row[4],
+                    ton_toi_thieu=row[5],
+                    trang_thai=row[6],
+                    ngay_tao=row[7],
+                    is_deleted=row[8],
+                )
+                for row in rows
+            ]
 
     def get_all(self):
         with get_connection() as conn:

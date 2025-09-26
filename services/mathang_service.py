@@ -7,11 +7,19 @@ class MatHangService(IMatHangService):
     def __init__(self):
         self.repo = MatHangRepository()
 
-    def validate_mat_hang(self, mat_hang: MatHang) -> None:        
+    def validate_mat_hang(self, mat_hang: MatHang, ma_hang: int | None) -> None:        
         errors = []
 
         # ---- Tên hàng ----
         try:
+            if(ma_hang):
+                all_items = self.repo.get_all_not_id(ma_hang)
+                if any(item.ten_hang.lower() == mat_hang.ten_hang.lower() for item in all_items):
+                    errors.append("Tên hàng đã tồn tại.")
+            else:
+                all_items = self.repo.get_all()
+                if any(item.ten_hang.lower() == mat_hang.ten_hang.lower() for item in all_items):
+                    errors.append("Tên hàng đã tồn tại.")
             if not mat_hang.ten_hang or not mat_hang.ten_hang.strip():
                 errors.append("Tên hàng không được để trống.")
             elif len(mat_hang.ten_hang.strip()) < 2:
@@ -82,9 +90,6 @@ class MatHangService(IMatHangService):
             
         
     def add_mat_hang(self, mat_hang: MatHang) -> bool:
-        all_items = self.repo.get_all()
-        if any(item.ten_hang.lower() == mat_hang.ten_hang.lower() for item in all_items):
-            return False
         self.repo.add(mat_hang)
         return True
 

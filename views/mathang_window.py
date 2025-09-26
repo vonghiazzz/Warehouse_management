@@ -234,7 +234,6 @@ class MatHangWindow:
 
     def save_item(self):
         try:
-            # Tạo object MatHang
             data = MatHang(
                 ten_hang=self.name_entry.get(),
                 don_vi=self.unit_var.get(),
@@ -244,37 +243,39 @@ class MatHangWindow:
                 trang_thai=self.status_var.get(),
                 ngay_tao=datetime.now()
             )
-            errors = self.controller.validate_mat_hang(data)
+
+            errors = self.controller.validate_mat_hang(data, None)
             if errors:
                 messagebox.showwarning("Lỗi dữ liệu", "\n".join(errors))
                 return
+
+            # Xác nhận
             if not messagebox.askyesno("Xác nhận", "Bạn có chắc muốn tạo bản ghi mới?"):
                 return
 
-            # Gọi controller để thêm mặt hàng mới
-            ma_hang = self.controller.add_mat_hang(data)
-            if not ma_hang:
-                messagebox.showwarning("Cảnh báo", "Tên hàng đã tồn tại!")
-                return
+            # Ghi xuống DB qua controller
+            if self.controller.add_mat_hang(data):
+                print(">>> Thêm mặt hàng thành công:", vars(data))
 
-            print(">>> Thêm mặt hàng thành công:", vars(data))
+                # Thêm vào TreeView
+                self.tree.insert("", "end", values=(
+                    data.ma_hang,
+                    data.ten_hang,
+                    data.don_vi,
+                    data.loai,
+                    data.mo_ta,
+                    data.ton_toi_thieu,
+                    data.trang_thai,
+                    data.ngay_tao.strftime("%d/%m/%Y")
+                ))
 
-            # Thêm vào TreeView
-            self.tree.insert("", "end", values=(
-                data.ma_hang,
-                data.ten_hang,
-                data.don_vi,
-                data.loai,
-                data.mo_ta,
-                data.ton_toi_thieu,
-                data.trang_thai,
-                data.ngay_tao.strftime("%Y-%m-%d %H:%M:%S")
-            ))
-
-            messagebox.showinfo("Thành công", "Thêm mặt hàng thành công.")
-            self.clear_form()
+                messagebox.showinfo("Thành công", "Thêm mặt hàng thành công.")
+                self.clear_form()
+            else:
+                messagebox.showerror("Lỗi", "Không thể thêm mặt hàng vào cơ sở dữ liệu.")
         except Exception as e:
             messagebox.showerror("Lỗi", f"Không thể lưu mặt hàng: {e}")
+
 
 
 
@@ -305,7 +306,7 @@ class MatHangWindow:
                 trang_thai=self.status_var.get(),
                 ngay_tao=datetime.now()
             )
-            errors = self.controller.validate_mat_hang(data)
+            errors = self.controller.validate_mat_hang(data, ma_hang)
             if errors:
                 messagebox.showerror("Lỗi dữ liệu", "\n".join(errors))
                 return

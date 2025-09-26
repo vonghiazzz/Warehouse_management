@@ -8,9 +8,6 @@ class MatHangController:
 
     def add_mat_hang(self, mat_hang: MatHang) -> int | None:
         try:
-            all_items = self.repo.get_all()
-            if any(item.ten_hang.lower() == mat_hang.ten_hang.lower() for item in all_items):
-                return -1
             return self.repo.add(mat_hang)
         except Exception as e:
             print(f"Lỗi SQL khi thêm mặt hàng: {e}")
@@ -33,10 +30,6 @@ class MatHangController:
 
     def update_mat_hang(self, ma_hang: int, mat_hang: MatHang) -> bool:
         try:
-            all_items = self.repo.get_all()
-            if any(item.ten_hang.lower() == mat_hang.ten_hang.lower() and item.ma_hang != ma_hang for item in all_items):
-                return False
-
             self.repo.update(mat_hang)
             return True
         except Exception as e:
@@ -55,5 +48,5 @@ class MatHangController:
             print(f"Lỗi SQL khi xóa mặt hàng {ma_hang}: {e}")
             return False
     
-    def validate_mat_hang(self, data: MatHang) -> list[str]:
-        return self.service.validate_mat_hang(data)
+    def validate_mat_hang(self, data: MatHang, ma_hang: int | None) -> list[str]:
+        return self.service.validate_mat_hang(data, ma_hang)
