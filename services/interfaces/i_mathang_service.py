@@ -23,5 +23,5 @@ class IMatHangService(ABC):
         pass
 
     @abstractmethod
-    def validate_mat_hang(self, data: MatHang, create: bool) -> list[str]:
+    def validate_mat_hang(self, data: MatHang, ma_hang: int | None) -> list[str]:
         pass
