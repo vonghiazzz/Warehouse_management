@@ -165,18 +165,50 @@ class NhapKhoWindow:
         if self.mathang_combobox["values"]:
             self.mathang_combobox.current(0)
 
+    # def load_data(self):
+    #     for row in self.tree.get_children():
+    #         self.tree.delete(row)
+    #     items = self.controller.get_all_nhap_kho()
+
+    #     for nk in items:
+    #         ma_ten = next((k for k, v in self.mathang_map.items() if v == nk.ma_hang), str(nk.ma_hang))
+    #         self.tree.insert("", "end", values=(
+    #             nk.id, ma_ten, nk.so_luong, nk.gia_nhap, nk.nha_cung_cap,
+    #             nk.nhan_vien_nhap, nk.han_su_dung, nk.so_hoa_don, nk.ghi_chu,
+    #             nk.ngay_tao.strftime("%m/%d/%Y") if nk.ngay_tao else ""
+    #         ))
+
     def load_data(self):
         for row in self.tree.get_children():
             self.tree.delete(row)
+
         items = self.controller.get_all_nhap_kho()
 
         for nk in items:
+            # Lấy "mã - tên" mặt hàng
             ma_ten = next((k for k, v in self.mathang_map.items() if v == nk.ma_hang), str(nk.ma_hang))
+
+            # Xử lý ngày tạo
+            if nk.ngay_tao:
+                try:
+                    if isinstance(nk.ngay_tao, str):
+                        # SQLite thường lưu dạng "YYYY-MM-DD HH:MM:SS"
+                        dt = datetime.strptime(nk.ngay_tao, "%Y-%m-%d %H:%M:%S")
+                    else:
+                        dt = nk.ngay_tao
+                    ngay_tao_str = dt.strftime("%m/%d/%Y %H:%M:%S")
+                except Exception:
+                    ngay_tao_str = str(nk.ngay_tao)
+            else:
+                ngay_tao_str = ""
+
+            # Insert vào TreeView
             self.tree.insert("", "end", values=(
                 nk.id, ma_ten, nk.so_luong, nk.gia_nhap, nk.nha_cung_cap,
                 nk.nhan_vien_nhap, nk.han_su_dung, nk.so_hoa_don, nk.ghi_chu,
-                nk.ngay_tao if nk.ngay_tao else ""
+                ngay_tao_str
             ))
+
 
     def save_item(self):
         try:
@@ -189,7 +221,7 @@ class NhapKhoWindow:
                 han_su_dung=self.expiry_entry.get(),
                 so_hoa_don=self.bill_entry.get(),
                 ghi_chu=self.note_entry.get(),
-                ngay_tao=datetime.now(),
+                ngay_tao = datetime.now(),
                 is_delete=0
             )
             errors = self.controller.validate_nhap_kho(data)
@@ -224,7 +256,7 @@ class NhapKhoWindow:
                 han_su_dung=self.expiry_entry.get(),
                 so_hoa_don=self.bill_entry.get(),
                 ghi_chu=self.note_entry.get(),
-                ngay_tao=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                ngay_tao=datetime.now(),
                 is_delete=0
             )
 
